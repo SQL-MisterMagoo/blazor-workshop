@@ -1,5 +1,6 @@
 ﻿@page "/myorders"
 @layout ForceSignInLayout
+@inject IUriHelper UriHelper
 @inject HttpClient HttpClient
 
 <div class="main">
@@ -30,9 +31,9 @@
 </div>
 
 @functions {
-    async Task<List<OrderWithStatus>> LoadOrders()
-    {
-        await Task.Delay(3000);
-        return await HttpClient.GetJsonAsync<List<OrderWithStatus>>("/orders");
-    }
+		string BaseUri => UriHelper.GetBaseUri().TrimEnd('/');
+		Task<List<OrderWithStatus>> LoadOrders()
+		{
+			return HttpClient.GetJsonAsync<List<OrderWithStatus>>($"{BaseUri}/orders");
+		}
 }

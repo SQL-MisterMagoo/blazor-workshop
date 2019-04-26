@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Globalization;
 
 namespace BlazingPizza.Server
 {
@@ -21,6 +22,9 @@ namespace BlazingPizza.Server
                     SeedData.Initialize(db);
                 }
             }
+            // Without this I was getting problems with mismatched cultures
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.CurrentCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.CurrentCulture;
 
             host.Run();
         }

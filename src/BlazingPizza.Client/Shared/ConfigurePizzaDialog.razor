@@ -1,4 +1,5 @@
-﻿@inject HttpClient HttpClient
+﻿@inject IUriHelper UriHelper
+@inject HttpClient HttpClient
 
 <div class="dialog-title">
     <h2>@Pizza.Special.Name</h2>
@@ -63,9 +64,11 @@
     [Parameter] Action OnCancel { get; set; }
     [Parameter] Action OnConfirm { get; set; }
 
+		string BaseUri => UriHelper.GetBaseUri().TrimEnd('/');
+
     protected async override Task OnInitAsync()
     {
-        toppings = await HttpClient.GetJsonAsync<List<Topping>>("/toppings");
+        toppings = await HttpClient.GetJsonAsync<List<Topping>>($"{BaseUri}/toppings");
     }
 
     void ToppingSelected(UIChangeEventArgs e)

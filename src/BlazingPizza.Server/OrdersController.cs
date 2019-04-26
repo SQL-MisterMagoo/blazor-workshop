@@ -52,9 +52,11 @@ namespace BlazingPizza.Server
         }
 
         [HttpPost]
-        public async Task<ActionResult> PlaceOrder(Order order)
+        public async Task<ActionResult> PlaceOrder([FromBody] Order order)
         {
-            order.CreatedTime = DateTime.Now;
+            // Strip off milliseconds as deserialisation was failing in the client 
+            var now = DateTime.Now;
+            order.CreatedTime = new DateTime(now.Ticks - (now.Ticks % TimeSpan.TicksPerSecond), now.Kind);
             order.DeliveryLocation = new LatLong(51.5001, -0.1239);
             order.UserId = GetUserId();
 

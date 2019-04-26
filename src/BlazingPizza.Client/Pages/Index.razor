@@ -56,32 +56,33 @@
 </TemplatedDialog>
 
 @functions {
-    [CascadingParameter] UserStateProvider UserState { get; set; }
+		[CascadingParameter] UserStateProvider UserState { get; set; }
 
-    List<PizzaSpecial> specials;
+		List<PizzaSpecial> specials;
+		string BaseUri => UriHelper.GetBaseUri().TrimEnd('/');
 
-    protected async override Task OnInitAsync()
-    {
-        OrderState.StateChanged += OnOrderStateChanged;
-        specials = await HttpClient.GetJsonAsync<List<PizzaSpecial>>("/specials");
-    }
+		protected async override Task OnInitAsync()
+		{
+			OrderState.StateChanged += OnOrderStateChanged;
+			specials = await HttpClient.GetJsonAsync<List<PizzaSpecial>>($"{BaseUri}/specials");
+		}
 
-    void IDisposable.Dispose()
-    {
-        OrderState.StateChanged -= OnOrderStateChanged;
-    }
+		void IDisposable.Dispose()
+		{
+			OrderState.StateChanged -= OnOrderStateChanged;
+		}
 
-    void OnOrderStateChanged(object sender, EventArgs e) => StateHasChanged();
+		void OnOrderStateChanged(object sender, EventArgs e) => StateHasChanged();
 
-    async Task PlaceOrder()
-    {
-        // The server will reject the submission if you're not signed in, so attempt
-        // to sign in first if needed
-        if (await UserState.TrySignInAsync())
-        {
-            await HttpClient.PostJsonAsync("/orders", OrderState.Order);
-            OrderState.ResetOrder();
-            UriHelper.NavigateTo("myorders");
-        }
-    }
+		async Task PlaceOrder()
+		{
+			// The server will reject the submission if you're not signed in, so attempt
+			// to sign in first if needed
+			if (await UserState.TrySignInAsync())
+			{
+				await HttpClient.PostJsonAsync($"{BaseUri}/orders", OrderState.Order);
+				OrderState.ResetOrder();
+				UriHelper.NavigateTo("myorders");
+			}
+		}
 }
